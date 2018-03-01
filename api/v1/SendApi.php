@@ -27,15 +27,26 @@ class SendApi extends API {
 	 * @apiName 验证码
 	 * @session
 	 *
+	 * @param string $type 图片类型(gif,png,jpg)
+	 * @param string $size 图片尺寸，格式为:宽x高
+	 * @param int    $font 字体大小
+	 *
 	 * @return array {
 	 *  "enabled":"bool|是否需要验证码",
 	 *  "captcha":"string|验证码URL"
 	 * }
 	 */
-	public function captcha() {
-		$enabled = App::bcfg('captcha_enabled@sms');
+	public function captcha($type = 'gif', $size = '60x20', $font = 15) {
+		$enabled = App::bcfg('captcha@sms', false);
+		$captcha = '';
 
-		return ['enabled' => $enabled];
+		if ($enabled && $this->sessionId) {
+			$captcha = App::url('rest/captcha/') . $this->sessionId . '/' . $size . '.' . $font . '.' . $type;
+		} else {
+			$enabled = false;
+		}
+
+		return ['enabled' => $enabled, 'captcha' => $captcha];
 	}
 
 	/**
@@ -43,31 +54,31 @@ class SendApi extends API {
 	 * @apiName 发送
 	 * @session
 	 *
-	 * @param string $phone (required) 手机号
-	 * @param string $tid   (required) 模板编号
-	 * @param object $param (sample={"code":"string"}) 短信模板需要的参数
+	 * @param string $phone   (required) 手机号
+	 * @param string $tid     (required) 模板编号
+	 * @param string $captcha 验证码
+	 * @param object $param   (sample={"code":"string"}) 短信模板需要的参数
 	 *
 	 * @error   403=>未开始会话
 	 * @error   405=>验证码不正确
 	 * @error   406=>请输入手机号
 	 * @error   407=>手机格式错误
 	 * @error   408=>模板编号为空
-	 * @error   409=>短信通道错误
+	 * @error   500=>短信通道错误
 	 *
 	 * @return array {
 	 *  "timeout":"多久后可以重新发送"
 	 * }
 	 * @throws
 	 */
-	public function send($phone, $tid, $param = null) {
-		if (!defined('REST_SESSION_ID')) {
+	public function send($phone, $tid, $captcha = '', $param = null) {
+		if (!$this->sessionId) {
 			$this->error(403, '请开启会话');
 		}
 		$content = $tid;
 
-		if (App::bcfg('captcha_enabled@sms')) {
-			$captcha = aryget('captcha', $param);
-			$code    = new CaptchaCode();
+		if (App::bcfg('captcha@sms')) {
+			$code = new CaptchaCode();
 			if (!$captcha || !$code->validate($captcha, false, true)) {
 				$this->error(405, '验证码不正确');
 			}
@@ -87,7 +98,7 @@ class SendApi extends API {
 		if ($rst) {
 			$rtn['timeout'] = $param['exp'];
 		} else {
-			$this->error(409, $param['errorMsg']);
+			$this->error(500, $param['errorMsg']);
 		}
 
 		return $rtn;

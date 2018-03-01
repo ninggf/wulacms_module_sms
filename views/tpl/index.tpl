@@ -4,9 +4,10 @@
             <table data-table>
                 <thead>
                 <tr>
+                    <th width="20"></th>
                     <th width="120">模板编号</th>
                     <th width="120">模板名称</th>
-                    <th>默认内容</th>
+                    <th width="300">默认内容</th>
                     {if $hasVendorTpl}
                         <th>第三方模板</th>
                     {else}
@@ -18,7 +19,8 @@
                 </thead>
                 <tbody>
                 {foreach $tpls as $tpl}
-                    <tr>
+                    <tr {if $tpl.args}rel="{$tpl.tpl}"{/if}>
+                        <td></td>
                         <td>{$tpl.tpl}</td>
                         <td>{$tpl.name}</td>
                         <td>{$tpl.template}</td>
@@ -36,6 +38,17 @@
                             </a>
                         </td>
                     </tr>
+                    {if $tpl.args}
+                        <tr class="hidden">
+                            <td></td>
+                            <td colspan="2"></td>
+                            <td colspan="3">模板参数说明:
+                                {foreach $tpl.args as $arg=>$desc}
+                                    {$arg}:{$desc|escape}&nbsp;&nbsp;
+                                {/foreach}
+                            </td>
+                        </tr>
+                    {/if}
                 {/foreach}
                 </tbody>
             </table>

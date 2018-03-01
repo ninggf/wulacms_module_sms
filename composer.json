@@ -3,7 +3,8 @@
   "description": "为wulacms提供短信发送功能",
   "type": "wula-module",
   "require": {
-	"wula/wula-installer": "^1.0"
+	"wula/wula-installer": "^1.0",
+	"aliyuncs/aliyun-dysms-msg-php-sdk":""
   },
   "license": "MIT",
   "authors": [

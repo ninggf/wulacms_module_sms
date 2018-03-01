@@ -47,6 +47,7 @@ class SmsTplTable extends Table {
 				$list[ $id ]['tpl']      = $tpl;
 				$list[ $id ]['name']     = $app->getName();
 				$list[ $id ]['template'] = $app->getTemplate();
+				$list[ $id ]['args']     = $app->getArgsDesc();
 				$data[]                  = $list[ $id ];
 			}
 		}

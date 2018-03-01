@@ -20,8 +20,8 @@ use sms\classes\Sms;
  * @acl     m:system/sms
  */
 class LogController extends IFramePageController {
-	public function index($id = '') {
-		$data['id']     = $id;
+	public function index($type = '') {
+		$data['id']     = $type;
 		$data['groups'] = Sms::vendorsName();
 
 		return $this->render($data);

@@ -11,6 +11,8 @@
             <i class="fa fa-times text-danger text"></i>
         </td>
         <td>{$row.desc}</td>
+        <td><input type="text" value="{$row.priority}" data-ajax data-url="{'sms/change-priority'|app}/{$row.id}"
+                   class="form-control input-sm text-center"/></td>
         <td class="text-right">
             <div class="btn-group">
                 {if $row.hasForm}
@@ -19,7 +21,8 @@
                         <i class="fa fa-gear"></i>
                     </a>
                 {/if}
-                <a href="{'sms/tpl'|app}/{$row.id}" data-tab="&#xe63c;" class="btn btn-xs btn-primary" title="短信模板:{$row.name}">
+                <a href="{'sms/tpl'|app}/{$row.id}" data-tab="&#xe63c;" class="btn btn-xs btn-primary"
+                   title="短信模板:{$row.name}">
                     <i class="fa fa-pencil-square-o"></i>
                 </a>
             </div>
@@ -27,7 +30,7 @@
     </tr>
     {foreachelse}
     <tr>
-        <td colspan="6">无数据</td>
+        <td colspan="7">无数据</td>
     </tr>
 {/foreach}
 </tbody>

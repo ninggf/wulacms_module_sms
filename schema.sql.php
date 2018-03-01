@@ -16,6 +16,7 @@ $tables ['1.0.0'] [] = "CREATE TABLE IF NOT EXISTS `{prefix}sms_log` (
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}sms_vendor` (
     `id` VARCHAR(16) NOT NULL COMMENT '供应商ID',
     `status` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否启用',
+    `priority` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '优先级',
     `options` TEXT NULL COMMENT '配置',
     PRIMARY KEY (`id`)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='短信提供商'";

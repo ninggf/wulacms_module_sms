@@ -6,6 +6,8 @@ use backend\classes\IFramePageController;
 use backend\form\BootstrapFormRender;
 use sms\classes\model\SmsVendorTable;
 use sms\classes\Sms;
+use sms\classes\SmsSetting;
+use wulaphp\app\App;
 use wulaphp\io\Ajax;
 use wulaphp\io\Response;
 use wulaphp\util\ArrayCompare;
@@ -20,13 +22,15 @@ class IndexController extends IFramePageController {
 	use JQueryValidatorController;
 
 	public function index() {
+		$data['cfg'] = App::cfg('@sms');
 
-		return $this->render();
+		return $this->render($data);
 	}
 
 	public function data($sort) {
 		$app          = new SmsVendorTable();
 		$data['rows'] = $app->vendors();
+		usort($data['rows'], ArrayCompare::compare('priority', 'd'));
 		usort($data['rows'], ArrayCompare::compare($sort['name'], $sort['dir']));
 
 		return view($data);
@@ -45,6 +49,24 @@ class IndexController extends IFramePageController {
 		}
 
 		return Ajax::reload('#table', $status ? '启用成功' : '禁用成功');
+	}
+
+	public function changePriority($id, $value) {
+		$app = new SmsVendorTable();
+		try {
+			$app->updatePriority($id, $value);
+		} catch (\Exception $e) {
+			return Ajax::error($e->getMessage(), 'alert');
+		}
+
+		return Ajax::reload('#table', '通道优先级调整成功');
+	}
+
+	public function setting($id, $value) {
+		$setting = new SmsSetting();
+		$setting->save([$id => $value], 'sms');
+
+		return Ajax::success('');
 	}
 
 	public function cfg($id) {

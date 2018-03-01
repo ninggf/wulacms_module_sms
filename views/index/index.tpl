@@ -12,6 +12,25 @@
                                 class="fa fa-check-square-o"></i>
                         激活</a>
                 </div>
+
+                <button class="btn btn-sm btn-default {if $cfg.testMode}active{/if}" data-toggle="button" data-ajax data-url="{'sms/setting/testMode'|app}">
+                    <span class="text">
+                        <i class="fa fa-square-o"></i> 测试模式
+                    </span>
+                    <span class="text-active">
+                        <i class="fa fa-check-square-o text-success"></i> 测试模式
+                    </span>
+                </button>
+
+                <button class="btn btn-sm btn-default {if $cfg.captcha}active{/if}" data-toggle="button" data-ajax data-url="{'sms/setting/captcha'|app}">
+                    <span class="text">
+                        <i class="fa fa-square-o"></i> 验证码
+                    </span>
+                    <span class="text-active">
+                        <i class="fa fa-check-square-o text-success"></i> 验证码
+                    </span>
+                </button>
+
             </div>
         </div>
     </header>
@@ -24,6 +43,7 @@
                 <th width="150" data-sort="name,a">名称</th>
                 <th width="100" data-sort="status,d">状态</th>
                 <th>说明</th>
+                <th width="80">优先级</th>
                 <th width="80"></th>
             </tr>
             </thead>
@@ -31,13 +51,19 @@
     </section>
 </div>
 <script>
-	layui.use(['jquery', 'layer', 'wulaui'], ($, layer, $$) => {
+	layui.use(['jquery', 'layer', 'bootstrap', 'wulaui'], ($, layer, $$) => {
 		$('#app-list').on('before.dialog', '.cfg-app', function (e) {
 			e.options.btn = ['保存', '取消'];
 			e.options.yes = function () {
 				$('#edit-form').submit();
 				return false;
 			};
+		}).on('ajax.before', '.form-control', function () {
+			var p = $(this).val();
+			if (!/^[1-9]\d*/.test(p)) {
+				layer.alert('优先级只能是数字');
+				return false;
+			}
 		}).removeClass('layui-hide');
 		$('body').on('ajax.success', '#edit-form', function () {
 			layer.closeAll();

@@ -55,13 +55,14 @@ class SmsVendorTable extends Table {
 	/**
 	 * 更新状态.
 	 *
-	 * @param string|int $status
-	 * @param array      $ids
+	 * @param string|int   $status
+	 * @param array|string $ids
+	 * @param bool         $check
 	 *
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function updateStatus($status, $ids) {
+	public function updateStatus($status, $ids, $check = true) {
 		$vendors = Sms::vendors();
 		$status  = intval($status);
 		foreach ((array)$ids as $id) {
@@ -69,7 +70,7 @@ class SmsVendorTable extends Table {
 				continue;
 			}
 			$v = $vendors[ $id ];
-			if (!$v->canEnable()) {
+			if ($check && !$v->canEnable()) {
 				throw_exception($v->getError());
 			}
 			if ($this->exist(['id' => $id])) {
@@ -82,21 +83,40 @@ class SmsVendorTable extends Table {
 		return true;
 	}
 
+	public function updatePriority($id, $priority) {
+		$vendors  = Sms::vendors();
+		$priority = intval($priority);
+
+		if (!isset($vendors[ $id ])) {
+			return false;
+		}
+
+		if ($this->exist(['id' => $id])) {
+			$this->update(['priority' => $priority], $id);
+		} else {
+			$this->insert(['id' => $id, 'priority' => $priority]);
+		}
+
+		return true;
+	}
+
 	/**
 	 * 随机获取一个可用的短信通道.
 	 *
-	 * @return null|\sms\classes\SmsVendor
+	 * @return \sms\classes\SmsVendor[]
 	 */
-	public function getAvailableVendor() {
-		$ids = $this->findAll(['status' => 1], 'id')->toArray('id');
+	public function getAvailableVendors() {
+		$vendors = [];
+		$ids     = $this->findAll(['status' => 1], 'id')->desc('priority')->toArray('id');
 		if ($ids) {
-			$id   = count($ids) == 1 ? $ids[0] : $ids[ array_rand($ids) ];
 			$apps = Sms::vendors();
-			if (isset($apps[ $id ])) {
-				return $apps[ $id ];
+			foreach ($ids as $id) {
+				if (isset($apps[ $id ])) {
+					$vendors[ $id ] = $apps[ $id ];
+				}
 			}
 		}
 
-		return null;
+		return $vendors;
 	}
 }

@@ -21,6 +21,12 @@ class Sender extends SmsVendor {
 		return '创蓝';
 	}
 
+	/**
+	 * @param \sms\classes\SMSTemplate $template
+	 * @param string                   $phone
+	 *
+	 * @return bool
+	 */
 	public function send($template, $phone) {
 		$cfg     = $this->getConfig();
 		$account = $cfg['account'];
