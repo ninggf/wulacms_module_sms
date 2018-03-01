@@ -36,7 +36,7 @@ class SendApi extends API {
 	 *  "captcha":"string|验证码URL"
 	 * }
 	 */
-	public function captcha($type = 'gif', $size = '60x20', $font = 15) {
+	public function captcha($type = 'gif', $size = '90x30', $font = 15) {
 		$enabled = App::bcfg('captcha@sms', false);
 		$captcha = '';
 

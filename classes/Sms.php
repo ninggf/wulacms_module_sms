@@ -34,13 +34,11 @@ class Sms {
 	 */
 	public static function send($phone, $tid, &$args = null) {
 		if (empty ($phone) || empty ($tid)) {
-			log_error('手机号:' . $phone . ', 模板:' . $tid . ', 有一个为空', 'sms');
 			$args['errorMsg'] = '手机号:' . $phone . ', 模板:' . $tid . ', 有一个为空';
 
 			return false;
 		}
 		if (!preg_match('#^1[345789]\d{9}$#', $phone)) {
-			log_error('手机号:' . $phone . '非法', 'sms');
 			$args['errorMsg'] = '手机号:' . $phone . '非法';
 
 			return false;
@@ -48,7 +46,6 @@ class Sms {
 		$table   = new SmsVendorTable();
 		$vendors = $table->getAvailableVendors();
 		if (empty ($vendors)) {
-			log_error('未配置短信提供商', 'sms');
 			$args['errorMsg'] = '未配置短信提供商';
 
 			return false;
@@ -56,7 +53,6 @@ class Sms {
 
 		$templates = self::templates();
 		if (!isset ($templates [ $tid ])) {
-			log_error('模板' . $tid . '不存在', 'sms');
 			$args['errorMsg'] = '模板' . $tid . '不存在';
 
 			return false;
