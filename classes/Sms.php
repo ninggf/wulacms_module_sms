@@ -12,7 +12,9 @@ namespace sms\classes;
 
 use sms\classes\model\SmsTplTable;
 use sms\classes\model\SmsVendorTable;
+use sms\classes\tpl\BindTemplate;
 use sms\classes\tpl\RegCodeTemplate;
+use sms\classes\tpl\ResetPasswdTemplate;
 use wulaphp\app\App;
 
 /**
@@ -184,7 +186,9 @@ class Sms {
 		if ($templates === false) {
 
 			$templates = apply_filter('sms\templates', [
-				'register_code' => new RegCodeTemplate()
+				'register_code' => new RegCodeTemplate(),
+				'reset_pwd'     => new ResetPasswdTemplate(),
+				'bind_phone'    => new BindTemplate()
 			]);
 		}
 
