@@ -31,9 +31,12 @@ class SendApi extends API {
 	 * @param string $size 图片尺寸，格式为:宽x高
 	 * @param int    $font 字体大小
 	 *
+	 * @paramo  bool enabled 是否需要验证码
+	 * @paramo  string captcha 验证码URL,通过此URL加载验证码图片
+	 *
 	 * @return array {
-	 *  "enabled":"bool|是否需要验证码",
-	 *  "captcha":"string|验证码URL"
+	 *  "enabled":true,
+	 *  "captcha":"/rest/captcha/afasdfasdfasd/90x30.15.gif"
 	 * }
 	 */
 	public function captcha($type = 'gif', $size = '90x30', $font = 15) {
@@ -66,8 +69,10 @@ class SendApi extends API {
 	 * @error   408=>模板编号为空
 	 * @error   500=>短信通道错误
 	 *
+	 * @paramo  int timeout 多久后可以重新发送
+	 *
 	 * @return array {
-	 *  "timeout":"多久后可以重新发送"
+	 *  "timeout":120
 	 * }
 	 * @throws
 	 */
