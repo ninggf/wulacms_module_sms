@@ -22,9 +22,9 @@ use wulaphp\app\App;
  */
 class SendApi extends API {
 	/**
-	 * 验证码是否启用.
+	 * 发送短信时是否需要提供图片验证码.
 	 *
-	 * @apiName 验证码
+	 * @apiName 图片验证
 	 * @session
 	 *
 	 * @param string $type 图片类型(gif,png,jpg)
@@ -54,11 +54,11 @@ class SendApi extends API {
 
 	/**
 	 * 发送短信
-	 * @apiName 发送
+	 * @apiName 发送短信
 	 * @session
 	 *
 	 * @param string $phone   (required) 手机号
-	 * @param string $tid     (required) 模板编号
+	 * @param string $tid     (required,sample=register_code) 模板编号,参见具体业务接口。
 	 * @param string $captcha 验证码
 	 * @param object $param   (sample={"code":"string"}) 短信模板需要的参数
 	 *

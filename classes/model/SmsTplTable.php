@@ -42,13 +42,13 @@ class SmsTplTable extends Table {
 		$data = [];
 		if ($apps) {
 			$sql  = $this->find(['id' => $id]);
-			$list = $sql->toArray(null, 'id');
+			$list = $sql->toArray(null, 'tpl');
 			foreach ($apps as $tpl => $app) {
-				$list[ $id ]['tpl']      = $tpl;
-				$list[ $id ]['name']     = $app->getName();
-				$list[ $id ]['template'] = $app->getTemplate();
-				$list[ $id ]['args']     = $app->getArgsDesc();
-				$data[]                  = $list[ $id ];
+				$list[ $tpl ]['tpl']      = $tpl;
+				$list[ $tpl ]['name']     = $app->getName();
+				$list[ $tpl ]['template'] = $app->getTemplate();
+				$list[ $tpl ]['args']     = $app->getArgsDesc();
+				$data[]                   = $list[ $tpl ];
 			}
 		}
 
