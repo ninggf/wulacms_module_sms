@@ -11,6 +11,7 @@
 namespace sms\api\v1;
 
 use backend\classes\CaptchaCode;
+use rest\api\v1\SessionApi;
 use rest\classes\API;
 use sms\classes\Sms;
 use wulaphp\app\App;
@@ -33,6 +34,7 @@ class SendApi extends API {
 	 *
 	 * @paramo  bool enabled 是否需要验证码
 	 * @paramo  string captcha 验证码URL,通过此URL加载验证码图片
+	 * @paramo  string session 自动开启的会话ID，如果调用此接口时已经开启会话，则不会出现此字段
 	 *
 	 * @return array {
 	 *  "enabled":true,
@@ -42,14 +44,23 @@ class SendApi extends API {
 	public function captcha($type = 'gif', $size = '90x30', $font = 15) {
 		$enabled = App::bcfg('captcha@sms', false);
 		$captcha = '';
-
+		if (empty($this->sessionId)) {
+			$session = new SessionApi($this->appKey, '1');
+			$rtn     = $session->start();
+			if ($rtn && $rtn['session']) {
+				$this->sessionId = $rtn['session'];
+			}
+		}
 		if ($enabled && $this->sessionId) {
 			$captcha = App::url('rest/captcha/') . $this->sessionId . '/' . $size . '.' . $font . '.' . $type;
 		} else {
 			$enabled = false;
 		}
-
-		return ['enabled' => $enabled, 'captcha' => $captcha];
+		if (isset($rtn)) {
+			return ['enabled' => $enabled, 'captcha' => $captcha, 'session' => $this->sessionId];
+		} else {
+			return ['enabled' => $enabled, 'captcha' => $captcha];
+		}
 	}
 
 	/**
