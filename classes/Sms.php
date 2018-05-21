@@ -10,6 +10,7 @@
 
 namespace sms\classes;
 
+use sms\classes\chlan\JSONSender;
 use sms\classes\model\SmsTplTable;
 use sms\classes\model\SmsVendorTable;
 use sms\classes\tpl\BindTemplate;
@@ -73,7 +74,7 @@ class Sms {
 					break;
 				} else {
 					//将vendor设为禁用，并重试下一个通道.
-					$table->updateStatus(0, [$vid], false);
+					//$table->updateStatus(0, [$vid], false);
 				}
 			} catch (ToofastException $te) {
 				//发送太快
@@ -160,8 +161,9 @@ class Sms {
 		static $vendors = false;
 		if ($vendors === false) {
 			$vendors = apply_filter('sms\vendors', [
-				'dayu'  => new \sms\classes\dayu\Sender(),
-				'chlan' => new \sms\classes\chlan\Sender()
+				'dayu'      => new \sms\classes\dayu\Sender(),
+				'chlan'     => new \sms\classes\chlan\Sender(),
+				'chlanjson' => new JSONSender()
 			]);
 		}
 
