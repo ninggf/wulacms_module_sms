@@ -103,7 +103,7 @@ class SendApi extends API {
             $this->error(406, '请输入手机号');
         }
         // 正则手机
-        if (preg_match('/^1[34578]\d{9}$/', $phone) == 0) {
+        if (preg_match('/^1[345789]\d{9}$/', $phone) == 0) {
             $this->error(407, '手机格式错误');
         }
         if (!$content) {
