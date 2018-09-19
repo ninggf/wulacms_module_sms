@@ -42,11 +42,12 @@ class Sms {
 
 			return false;
 		}
-		if (!preg_match('#^1[345789]\d{9}$#', $phone)) {
+		if (!preg_match('#^1[3456789]\d{9}$#', $phone)) {
 			$args['errorMsg'] = '手机号:' . $phone . '非法';
 
 			return false;
 		}
+
 		$table   = new SmsVendorTable();
 		$vendors = $table->getAvailableVendors();
 		if (empty ($vendors)) {
