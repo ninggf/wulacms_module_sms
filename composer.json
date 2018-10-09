@@ -1,19 +1,20 @@
 {
-  "name": "wulacms/sms",
-  "description": "为wulacms提供短信发送功能",
-  "type": "wula-module",
-  "require": {
-	"wula/aliyun-sms":"^1.0"
-  },
-  "license": "MIT",
-  "authors": [
-	{
-	  "name": "Leo Ning",
-	  "email": "windywany@gmail.com"
-	}
-  ],
-  "support": {
-	"issues": "https://github.com/ninggf/wulacms_module_sms/issues"
-  },
-  "homepage": "https://www.wulacms.com/modules/sms"
+    "name": "wulacms/sms",
+    "description": "为wulacms提供短信发送功能",
+    "type": "wula-module",
+    "require": {
+        "wula/wula-installer": "^2.0",
+        "wula/aliyun-sms": "^1.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leo Ning",
+            "email": "windywany@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/ninggf/wulacms_module_sms/issues"
+    },
+    "homepage": "https://www.wulacms.com/modules/sms"
 }
