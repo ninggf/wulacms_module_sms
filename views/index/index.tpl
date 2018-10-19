@@ -13,7 +13,8 @@
                         激活</a>
                 </div>
 
-                <button class="btn btn-sm btn-default {if $cfg.testMode}active{/if}" data-toggle="button" data-ajax data-url="{'sms/setting/testMode'|app}">
+                <button class="btn btn-sm btn-default {if $cfg.testMode}active{/if}" data-toggle="button" data-ajax
+                        data-url="{'sms/setting/testMode'|app}">
                     <span class="text">
                         <i class="fa fa-square-o"></i> 测试模式
                     </span>
@@ -22,7 +23,8 @@
                     </span>
                 </button>
 
-                <button class="btn btn-sm btn-default {if $cfg.captcha}active{/if}" data-toggle="button" data-ajax data-url="{'sms/setting/captcha'|app}">
+                <button class="btn btn-sm btn-default {if $cfg.captcha}active{/if}" data-toggle="button" data-ajax
+                        data-url="{'sms/setting/captcha'|app}">
                     <span class="text">
                         <i class="fa fa-square-o"></i> 验证码
                     </span>
@@ -30,7 +32,6 @@
                         <i class="fa fa-check-square-o text-success"></i> 验证码
                     </span>
                 </button>
-
             </div>
         </div>
     </header>
@@ -51,22 +52,22 @@
     </section>
 </div>
 <script>
-	layui.use(['jquery', 'layer', 'bootstrap', 'wulaui'], ($, layer, $$) => {
-		$('#app-list').on('before.dialog', '.cfg-app', function (e) {
-			e.options.btn = ['保存', '取消'];
-			e.options.yes = function () {
-				$('#edit-form').submit();
-				return false;
-			};
-		}).on('ajax.before', '.form-control', function () {
-			var p = $(this).val();
-			if (!/^[1-9]\d*/.test(p)) {
-				layer.alert('优先级只能是数字');
-				return false;
-			}
-		}).removeClass('layui-hide');
-		$('body').on('ajax.success', '#edit-form', function () {
-			layer.closeAll();
-		});
-	});
+    layui.use(['jquery', 'layer', 'bootstrap', 'wulaui'], ($, layer) => {
+        $('#app-list').on('before.dialog', '.cfg-app', function (e) {
+            e.options.btn = ['保存', '取消'];
+            e.options.yes = function () {
+                $('#edit-form').submit();
+                return false;
+            };
+        }).on('ajax.before', '.form-control', function () {
+            var p = $(this).val();
+            if (!/^[1-9]\d*/.test(p)) {
+                layer.alert('优先级只能是数字');
+                return false;
+            }
+        }).removeClass('layui-hide');
+        $('body').on('ajax.success', '#edit-form', function () {
+            layer.closeAll();
+        });
+    });
 </script>

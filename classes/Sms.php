@@ -31,9 +31,9 @@ class Sms {
      * 发送短信.
      * 注：在发送之前请开启SESSION。
      *
-     * @param string $phone 手机号码.
-     * @param string $tid   模板编号.
-     * @param array  $args  参数数组.
+     * @param string|array $phone 手机号码.
+     * @param string       $tid   模板编号.
+     * @param array        $args  参数数组.
      *
      * @return bool 发送成功返回true,反之返回false.
      */
@@ -43,12 +43,15 @@ class Sms {
 
             return false;
         }
-        if (!preg_match('#^1[3456789]\d{9}$#', $phone)) {
-            $args['errorMsg'] = '手机号:' . $phone . '非法';
+        if (is_array($phone)) {
+            // 群发短信时不校验手机号格式
+        } else {
+            if (!preg_match('#^1[3456789]\d{9}$#', $phone)) {
+                $args['errorMsg'] = '手机号:' . $phone . '非法';
 
-            return false;
+                return false;
+            }
         }
-
         $table   = new SmsVendorTable();
         $vendors = $table->getAvailableVendors();
         if (empty ($vendors)) {
@@ -80,9 +83,6 @@ class Sms {
                 if ($rst) {
                     //发送成功跳出
                     break;
-                } else {
-                    //将vendor设为禁用，并重试下一个通道.
-                    //$table->updateStatus(0, [$vid], false);
                 }
             } catch (ToofastException $te) {
                 //发送太快
@@ -154,6 +154,10 @@ class Sms {
             $data ['note']   = $v->getError();
             $tpl->onFailure();
             $args['error'] = $data['note'];
+        }
+        if (is_array($data['phone'])) {
+            $data['note']  = '群发短信，共发送到' . count($data['phone']) . '个手机号。';
+            $data['phone'] = $data['phone'][0];
         }
         $tplTble->db()->insert($data)->into('{sms_log}')->exec();
 

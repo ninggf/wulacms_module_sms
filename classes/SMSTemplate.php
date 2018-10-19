@@ -9,13 +9,17 @@
  */
 
 namespace sms\classes;
+
+use wulaphp\app\App;
+
 /**
  * 短信模板.
  *
  * @package sms\classes
  */
 abstract class SMSTemplate {
-    protected $phone;//手机号
+    protected $smsCode; //短信验证码
+    protected $phone;   //手机号
     protected $params   = [];//参数
     protected $options  = [];//选项
     protected $content  = null;//内容
@@ -36,9 +40,37 @@ abstract class SMSTemplate {
     public abstract function getTemplate();
 
     /**
+     * 验证码检验。
+     *
+     * @param string $code
+     * @param string $phone
+     *
+     * @return bool
+     */
+    public function checkCode($code, $phone) {
+        $id = md5('sms@' . get_class($this));
+        list($code1, $time1, $phonex) = sess_get($id, []);
+        if ($time1 > time()) {
+            if ($code && strtolower($code1) == strtolower($code) && $phonex == $phone) {
+                sess_del($id);
+
+                return true;
+            }
+        } else {
+            sess_del($id);
+        }
+
+        return false;
+    }
+
+    /**
      * 发送成功时触发.
      */
     public function onSuccess() {
+        if ($this->smsCode) {
+            $id               = md5('sms@' . get_class($this));
+            $_SESSION [ $id ] = [$this->smsCode, time() + $this->getTimeout(), $this->phone];
+        }
     }
 
     /**
@@ -140,6 +172,8 @@ abstract class SMSTemplate {
     }
 
     protected function getTimeout() {
-        return $this->options['exp'];
+        $expire = App::icfgn('sms_expire', 300);
+
+        return $expire;
     }
 }
