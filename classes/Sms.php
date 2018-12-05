@@ -19,6 +19,7 @@ use sms\classes\tpl\LoginTemplate;
 use sms\classes\tpl\RegCodeTemplate;
 use sms\classes\tpl\ResetPasswdTemplate;
 use wulaphp\app\App;
+use wulaphp\util\RedisClient;
 
 /**
  * 短信工具类.
@@ -43,6 +44,11 @@ class Sms {
 
             return false;
         }
+        $day      = date('Ymd');
+        $hour     = 'h' . date('H');
+        $hm       = 'm' . date('Hi');
+        $limitKey = 'pl@' . $phone;
+        $limit    = null;
         if (is_array($phone)) {
             // 群发短信时不校验手机号格式
         } else {
@@ -50,6 +56,51 @@ class Sms {
                 $args['errorMsg'] = '手机号:' . $phone . '非法';
 
                 return false;
+            }
+            try {
+                $redis = RedisClient::getRedis();
+                $limit = $redis->get($limitKey);
+                if ($limit) {
+                    $limit = json_decode($limit, true);
+                }
+                $pday = date('Ymd', strtotime('-1 day'));
+                if (empty($limit)) {
+                    $limit = [
+                        $day => [
+                            'day' => 0
+                        ]
+                    ];
+                } else {
+                    unset($limit[ $pday ]);
+                    if (!isset($limit[ $day ])) {
+                        $limit = [
+                            $day => [
+                                'day' => 0
+                            ]
+                        ];
+                    }
+                }
+
+                //第天10条
+                if ($limit[ $day ]['day'] > 10) {
+                    $args['errorMsg'] = '超载啦';
+
+                    return false;
+                }
+                //每小时5条
+                if (isset($limit[ $day ][ $hour ]) && $limit[ $day ][ $hour ] > 5) {
+                    $args['errorMsg'] = '超载啦';
+
+                    return false;
+                }
+                //每分钟两条
+                if (isset($limit[ $day ][ $hm ]) && $limit[ $day ][ $hm ] > 2) {
+                    $args['errorMsg'] = '超载啦';
+
+                    return false;
+                }
+            } catch (\Exception $e) {
+                $redis = null;
             }
         }
         $table   = new SmsVendorTable();
@@ -92,6 +143,27 @@ class Sms {
             } catch (\Exception $e) {
                 $rst              = false;
                 $args['errorMsg'] = $e->getMessage();
+            }
+        }
+        if ($rst && isset($redis)) {
+            if (isset($limit[ $day ]['day'])) {
+                $limit[ $day ]['day'] = (int)$limit[ $day ]['day'] + 1;
+            } else {
+                $limit[ $day ]['day'] = 1;
+            }
+            if (isset($limit[ $day ][ $hour ])) {
+                $limit[ $day ][ $hour ] = (int)$limit[ $day ][ $hour ] + 1;
+            } else {
+                $limit[ $day ][ $hour ] = 1;
+            }
+            if ($limit[ $day ][ $hm ]) {
+                $limit[ $day ][ $hm ] = (int)$limit[ $day ][ $hm ] + 1;
+            } else {
+                $limit[ $day ][ $hm ] = 1;
+            }
+            try {
+                $redis->set($limitKey, json_encode($limit));
+            } catch (\Exception $e) {
             }
         }
 
